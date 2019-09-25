@@ -575,11 +575,9 @@
    "source": [
     "The maximum airfare for the circumstances given above is $203.55. At this price, the average number of coupons is 1.14, the Herfindel Index is 8000, and the distance between two cities is 1000 miles.\n",
     "\n",
-    "In terms of limitations, I think perhaps there are several that come to mind: \n",
-    "* The first potential limitation is that only 3 predictor variables are used in modeling/regressing airfare out of a possible 18. Although most of the models in this project (with exception of the PAX model) have a high adj. R-squared, it's possible that using more predictors could have increased accuracy.\n",
-    "* This is especially true in the case of the PAX constraint model. The introduction of other predictors could have elevated the R-square of this model and also the theoretically maximized the accuracy the predicted airfare.\n",
-    "* In the aviation industry, fuel costs govern fares at least as much as all of the predictors included in this dataset. I'm surprised that any model that predicts airfare would exclude this variable.\n",
-    "* Another limitation is the use of a concrete model whereas the use of an abstract model was possible."
+    "In terms of limitations, I think perhaps there are a couple that come to mind. The first potential limitation is that only 3 predictor variables are used in modeling/regressing airfare, out of a possible 18. Although most of the models in this project (with exception of the PAX model) have a high adj. R-squared, it's possible that using more predictors could have further increased accuracy.\n",
+    "\n",
+    "Another limitation is the use of a concrete model whereas the use of an abstract model was possible."
    ]
   },
   {
@@ -609,7 +607,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "<table class=\"tleft\" width=\"70%\">\n",
+    "<table class=\"tleft\" width=\"40%\">\n",
     "    <tr>\n",
     "        <td align=\"left\" width=\"30%\" colspan=\"2\"><p> <b>Description</b></p></td>\n",
     "        <td align=\"left\"><p><b>Concrete Model</b></p></td>\n",
