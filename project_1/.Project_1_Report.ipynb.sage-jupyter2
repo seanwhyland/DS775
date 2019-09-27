@@ -1,0 +1,36 @@
+{"backend_state":"running","kernel":"python3","kernel_state":"idle","kernel_usage":{"cpu":0,"memory":79818752},"metadata":{"language_info":{"codemirror_mode":{"name":"ipython","version":3},"file_extension":".py","mimetype":"text/x-python","name":"python","nbconvert_exporter":"python","pygments_lexer":"ipython3","version":"3.7.3"},"toc":{"base_numbering":1,"nav_menu":{},"number_sections":true,"sideBar":true,"skip_h1_title":false,"title_cell":"Table of Contents","title_sidebar":"Contents","toc_cell":false,"toc_position":{},"toc_section_display":true,"toc_window_display":true}},"type":"settings"}
+{"cell_type":"code","id":"3966a6","input":"# code for linear regression models goes here","pos":9,"type":"cell"}
+{"cell_type":"code","id":"5e82af","input":"Type your summary here.","pos":5,"type":"cell"}
+{"cell_type":"code","id":"76b9d3","input":"# code for Pyomo and nicely formatted output goes here","pos":15,"type":"cell"}
+{"cell_type":"code","id":"8ffd78","input":"# code to generate and display sensitivity report goes here","pos":19,"type":"cell"}
+{"cell_type":"markdown","id":"08dd05","input":"The optimal value of the airfare and for which values of COUPON, HI, and DISTANCE it occurs. ","pos":13,"type":"cell"}
+{"cell_type":"markdown","id":"269a9a","input":"<font color = \"blue\"> *** 8 points -  answer in cell below *** (don't delete this cell) </font>","pos":14,"type":"cell"}
+{"cell_type":"markdown","id":"2e7ade","input":"Written interpretations of activity ranges go here.","pos":25,"type":"cell"}
+{"cell_type":"markdown","id":"388c09","input":"# Conclusion","pos":26,"type":"cell"}
+{"cell_type":"markdown","id":"3adad1","input":"<font color = \"blue\"> *** 7 points -  answer in cell below *** (don't delete this cell) </font>","pos":28,"type":"cell"}
+{"cell_type":"markdown","id":"3bfd6d","input":"# Introduction","pos":2,"type":"cell"}
+{"cell_type":"markdown","id":"59209c","input":"<font color = \"blue\"> *** 5 points -  answer in cell below *** (don't delete this cell) </font>","pos":24,"type":"cell"}
+{"cell_type":"markdown","id":"59eaa4","input":"<font color = \"blue\"> *** 5 points -  answer in cell below *** (don't delete this cell) </font>","pos":8,"type":"cell"}
+{"cell_type":"markdown","id":"6a09cb","input":"Use this Jupyter notebook to summarize the details of this project organized in the following sections. \n\nThe file *Airfares.xlsx* contains real data that were collected between Q3-1996 and Q2-1997. The first sheet contains variable descriptions while the second sheet contains the data.  A csv file of the data is also provided (called *Airfares.csv*).","pos":1,"type":"cell"}
+{"cell_type":"markdown","id":"701c39","input":"# Appendix","pos":30,"type":"cell"}
+{"cell_type":"markdown","id":"72abcf","input":"# Activity Ranges","pos":22,"type":"cell"}
+{"cell_type":"markdown","id":"73afba","input":"<font color = \"blue\"> *** 5 points -  answer in cell below *** (don't delete this cell) </font>","pos":4,"type":"cell"}
+{"cell_type":"markdown","id":"75d84d","input":"","pos":33,"type":"cell"}
+{"cell_type":"markdown","id":"7a3f6e","input":"Summarize the problem statement, establishing the context and methods used in this project.","pos":3,"type":"cell"}
+{"cell_type":"markdown","id":"8cad79","input":"Briefly summarize the main conclusion of this project, state what you see as any limitations of the methods used here, and suggest other possible methods of addressing the maximizing of airfare in this problem scenario.","pos":27,"type":"cell"}
+{"cell_type":"markdown","id":"92c46d","input":"Type explanations here.","pos":21,"type":"cell"}
+{"cell_type":"markdown","id":"9ddea0","input":"Type your summary and explanation here.","pos":11,"type":"cell"}
+{"cell_type":"markdown","id":"a0c861","input":"Interpret the activity ranges (allowable ranges) for COUPON, HI, and DISTANCE in the context of the problem.","pos":23,"type":"cell"}
+{"cell_type":"markdown","id":"a4324f","input":"<font color = \"blue\"> *** 5 points -  answer in cell below *** (don't delete this cell) </font>","pos":20,"type":"cell"}
+{"cell_type":"markdown","id":"ac27fc","input":"Show the mathematical formulation for the linear programming problem used in this project.","pos":31,"type":"cell"}
+{"cell_type":"markdown","id":"b7ea95","input":"# Sensitivity Report","pos":16,"type":"cell"}
+{"cell_type":"markdown","id":"c63758","input":"Provide a brief summary of the linear regression models used to estimate coefficients that will be used in the linear programming problem.  Explain why the multiple regression equations had to be fitted through the origin (consider the assumptions of linear programming).","pos":7,"type":"cell"}
+{"cell_type":"markdown","id":"ce0267","input":"You can either use LaTeX and markdown or take a clean, cropped picture of neatly handwritten equations and drag-n-drop it here.\n\n<font color = \"blue\"> *** 5 points -  answer in cell below *** (don't delete this cell) </font>","pos":32,"type":"cell"}
+{"cell_type":"markdown","id":"ced5f6","input":"","pos":29,"type":"cell"}
+{"cell_type":"markdown","id":"d41e5d","input":"# Linear Regression Models","pos":6,"type":"cell"}
+{"cell_type":"markdown","id":"d6d75e","input":"<font size=18>Project 1: Report</font>","pos":0,"type":"cell"}
+{"cell_type":"markdown","id":"de7992","input":"From the sensitivity report, explain which constraints are binding for the number of passengers on that route (PAX), the starting city’s average personal income (S_INCOME), and the ending city’s average personal income (E_INCOME). If the constraint is binding, interpret the shadow price in the context of the problem.  If the constraint is not binding, interpret the slack in the context of the problem.","pos":17,"type":"cell"}
+{"cell_type":"markdown","id":"e4c46d","input":"# Optimal LP Solution","pos":12,"type":"cell"}
+{"cell_type":"markdown","id":"fb2748","input":"<font color = \"blue\"> *** 5 points -  answer in cell below *** (don't delete this cell) </font>","pos":10,"type":"cell"}
+{"cell_type":"markdown","id":"ffd2d8","input":"<font color = \"blue\"> *** 5 points -  answer in cell below *** (don't delete this cell) </font>","pos":18,"type":"cell"}
+{"last_load":1568840212437,"type":"file"}
