@@ -1,4 +1,7 @@
 def calculate_scores(model, best_params, x_test = x_test, y_test = y_test):
+    """
+    Function to calculate scores for both regression models and classifiers. It works with only randomforest regressor, but could be changed
+    """
     y_pred = model.predict(x_test)  
     results = best_params
     condition = False
@@ -29,6 +32,9 @@ def calculate_scores(model, best_params, x_test = x_test, y_test = y_test):
     return results
 
 def cv_score_rf(hyp_parameters):
+    """
+    Perform CV on RF
+    """
     hyp_parameters = hyp_parameters[0]
     rf_model = RandomForestRegressor(n_estimators=int(hyp_parameters[0]),
                                  max_features=hyp_parameters[1],
@@ -42,6 +48,9 @@ def cv_score_rf(hyp_parameters):
     return np.array(scores.mean())
 
 def cv_score_xgb(hyp_parameters):
+    """
+    Perform CV on XGB
+    """
     hyp_parameters = hyp_parameters[0]
     xgb_model = xgb.XGBClassifier(objective="binary:logistic",
                                  learning_rate=hyp_parameters[0],
@@ -73,7 +82,8 @@ def optimize_model(model,
                    use_parallel = True,
                    cv = 5,
                    n = 3):
-    
+
+    # Set params for RF    
     if isinstance(model, RandomForestRegressor):
         n_estimators = np.linspace(10,150, n, dtype=np.int).tolist() if opt_type != 'randomcv' else randint(10,151)
         max_features =  np.linspace(0.05,1, n).tolist() if opt_type != 'randomcv' else uniform(0.05,1)
@@ -89,6 +99,7 @@ def optimize_model(model,
             "bootstrap": bootstrap
         }
 
+    # Set RFS for XGB
     else: 
         n_estimators = np.linspace(50,150, n, dtype=np.int).tolist() if opt_type != 'randomcv' else randint(50,151)
         max_depth =  np.linspace(1,10, n, dtype=np.int).tolist() if opt_type != 'randomcv' else randint(1,11)
@@ -108,14 +119,16 @@ def optimize_model(model,
             "reg_alpha:": reg_alpha
         }
     
+    # Specify to use parallel processing
     n_jobs = -1 if use_parallel == True else 1
     
+    # if tuning method == grid search
     if opt_type == 'gridcv':
         print("Optimizing hyperparameters with GridSearchCV...")
         grid_search = GridSearchCV(model,
                            param_grid=params,
                            cv=cv,
-                           verbose=0,
+                           verbose=1,
                            n_jobs=n_jobs,
                            return_train_score=True)
         
@@ -124,15 +137,16 @@ def optimize_model(model,
         results = calculate_scores(grid_search, best_params)
         return(results)
 
+    # if tuning method == random CV
     elif opt_type == 'randomcv':
         print("Optimizing hyperparameters with RandomSearchCV...")
         random_search = RandomizedSearchCV(
             model,
             param_distributions=params,
             random_state=8675309,
-            n_iter=25,
+            n_iter=10,
             cv=cv,
-            verbose=0,
+            verbose=1,
             n_jobs=n_jobs,
             return_train_score=True)
         
@@ -141,8 +155,11 @@ def optimize_model(model,
         results = calculate_scores(random_search, best_params)
         return(results)
     
+    # if tuning method == Bayesian optimization
     elif opt_type == "bayes":
         print("Optimizing hyperparameters with Bayesian Optimization...")
+        
+        # if model is RF
         if isinstance(model, RandomForestRegressor):
             hp_bounds = [{'name': 'n_estimators', 'type': 'discrete', 'domain': (min(n_estimators), max(n_estimators))}, 
             {'name': 'max_features','type': 'continuous','domain': (min(max_features), max(max_features))}, 
@@ -150,7 +167,8 @@ def optimize_model(model,
             {'name': 'min_samples_leaf','type': 'discrete','domain': (min(min_samples_leaf), max(min_samples_leaf))}, 
             {'name': 'bootstrap','type': 'discrete','domain': (True, False)}]
             cv_score = cv_score_rf
-            
+        
+        # if model is XGB
         else:
             hp_bounds = [{'name': 'learning_rate','type': 'continuous','domain': (min(learning_rate), max(learning_rate))}, 
             {'name': 'max_depth','type': 'discrete','domain': (min(max_depth), max(max_depth))}, 
@@ -161,7 +179,7 @@ def optimize_model(model,
             {'name': 'reg_lambda','type': 'continuous','domain': (min(reg_lambda), max(reg_lambda))}]
             cv_score = cv_score_xgb
 
-
+        # create optmizer
         optimizer = BayesianOptimization(f=cv_score,
                                          domain=hp_bounds,
                                          model_type='GP',
@@ -169,13 +187,13 @@ def optimize_model(model,
                                          acquisition_jitter=0.05,
                                          exact_feval=True,
                                          maximize=True,
-                                         verbosity=False,
+                                         verbosity=True,
                                         njobs=n_jobs)
 
         optimizer.run_optimization(max_iter=20,verbosity=False)
-        
         best_params = {}
 
+        # if model is RF, convert continuous/discrete vals
         if isinstance(model, RandomForestRegressor):
             for i in range(len(hp_bounds)):
                 if hp_bounds[i]['type'] == 'continuous':
@@ -187,6 +205,7 @@ def optimize_model(model,
     
             bayopt_search = RandomForestRegressor(**best_params)
     
+        # if model is XGB, do same conversion
         else:
             for i in range(len(hp_bounds)):
                 if hp_bounds[i]['type'] == 'continuous':
@@ -201,8 +220,11 @@ def optimize_model(model,
                 
         return(results)
     
+    # if tuning method is TPOT
     elif opt_type == 'tpot':
         print("Optimizing hyperparameters with TPOT...")
+        
+        # specify config for regressor
         if isinstance(model, RandomForestRegressor):
             tpot_config = {
                 'sklearn.ensemble.RandomForestRegressor': {
@@ -217,14 +239,15 @@ def optimize_model(model,
             tpot = TPOTRegressor(generations=5,
                                  scoring="r2",
                                  population_size=15,
-                                 verbosity=0,
+                                 verbosity=2,
                                  config_dict=tpot_config,
                                  cv=cv,
                                  random_state=8675309)
 
             tpot.fit(x_train, y_train)
             tpot.export('tpot_rf.py')
-            
+
+            # process output file to get params
             with open("tpot_rf.py", "r") as fp:
                 for line in lines_that_start_with("exported_pipeline = ", fp):
                     parse_this = line
@@ -239,6 +262,7 @@ def optimize_model(model,
 
             results = calculate_scores(tpot, best_params)
 
+        # specify config for XGB
         else:
             tpot_config = {
                 'xgboost.XGBClassifier': {
@@ -256,7 +280,7 @@ def optimize_model(model,
 
             tpot = TPOTClassifier(generations=5,
                      population_size=1,
-                     verbosity=0,
+                     verbosity=2,
                      config_dict=tpot_config,
                      cv=cv,
                      random_state=8675309)
@@ -264,8 +288,12 @@ def optimize_model(model,
             tpot.fit(x_train, y_train)
             tpot.export('tpot_xbg.py')
             
+            # process output file to get params
             with open("tpot_xbg.py", "r") as fp:
-                for line in lines_that_contain("StackingEstimator(estimator=XGBClassifier", fp):
+                # for line in lines_that_contain("exported_pipeline =", fp):
+                #     parse_this = line
+
+                for line in lines_that_contain("XGB", fp):
                     parse_this = line
 
             p = re.compile(r"[\w]+=[\d+\.\d+]+")
@@ -276,7 +304,8 @@ def optimize_model(model,
                 key, val = match.split("=")
                 best_params[key] = eval(val)
 
-            del best_params['nthread']
+            if 'nthread' in best_params:
+                del best_params['nthread']
 
             results = calculate_scores(tpot, best_params)
         return(results)
