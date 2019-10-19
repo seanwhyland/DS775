@@ -7,7 +7,7 @@ def calculate_scores(model, best_params, x_test = x_test, y_test = y_test):
         condition = isinstance(model.estimator, sklearn.ensemble.forest.RandomForestRegressor)
         
     except:
-        condition = isinstance(model, sklearn.ensemble.forest.RandomForestRegressor)
+        condition = isinstance(model, (sklearn.ensemble.forest.RandomForestRegressor, tpot.tpot.TPOTRegressor))
     
     if condition == True:
         r_squared = model.score(x_test,y_test)
@@ -216,7 +216,7 @@ def optimize_model(model,
 
             tpot = TPOTRegressor(generations=5,
                                  scoring="r2",
-                                 population_size=20,
+                                 population_size=15,
                                  verbosity=0,
                                  config_dict=tpot_config,
                                  cv=cv,
@@ -237,6 +237,8 @@ def optimize_model(model,
                 key, val = match.split("=")
                 best_params[key] = eval(val)
 
+            results = calculate_scores(tpot, best_params)
+
         else:
             tpot_config = {
                 'xgboost.XGBClassifier': {
@@ -253,7 +255,7 @@ def optimize_model(model,
             }
 
             tpot = TPOTClassifier(generations=5,
-                     population_size=10,
+                     population_size=1,
                      verbosity=0,
                      config_dict=tpot_config,
                      cv=cv,
@@ -276,7 +278,7 @@ def optimize_model(model,
 
             del best_params['nthread']
 
-        results = calculate_scores(tpot, best_params)
+            results = calculate_scores(tpot, best_params)
         return(results)
 
 def wrapper(model, cv = 3, n = 3):
