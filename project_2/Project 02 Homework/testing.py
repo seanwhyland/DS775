@@ -1,18 +1,18 @@
-def calculate_scores(model, best_params, x_test = x_test, y_test = y_test):
+def calculate_scores(model, best_params, x_test, y_test):
     """
-    Function to calculate scores for both regression models and classifiers. It works with only randomforest regressor, but could be changed
+    Function to calculate scores for both regression models and classifiers.
     """
     y_pred = model.predict(x_test)  
     results = best_params
-    condition = False
+    regressor_condition1, regressor_condition2 = False, False
 
-    try:
-        condition = isinstance(model.estimator, sklearn.ensemble.forest.RandomForestRegressor)
-        
-    except:
-        condition = isinstance(model, (sklearn.ensemble.forest.RandomForestRegressor, tpot.tpot.TPOTRegressor))
+    estimator_condition = 'estimator' in dir(model)
+    if estimator_condition:
+        regressor_condition1 = 'Regressor' in str(type(model.estimator))
+    else:
+        regressor_condition2 = 'Regressor' in str(type(model))
     
-    if condition == True:
+    if regressor_condition1 or regressor_condition2:
         r_squared = model.score(x_test,y_test)
         mse = mean_squared_error(y_test,y_pred)
         rmse = np.sqrt(mse)
@@ -73,12 +73,13 @@ def lines_that_start_with(string, fp):
 def lines_that_contain(string, fp):
     return [line for line in fp if string in line]
 
+
 def optimize_model(model, 
+                   x_train, 
+                   y_train, 
+                   x_test, 
+                   y_test,
                    opt_type, 
-                   x_train = x_train, 
-                   y_train = y_train, 
-                   x_test = x_test, 
-                   y_test = y_test, 
                    use_parallel = True,
                    cv = 5,
                    n = 3):
@@ -86,7 +87,7 @@ def optimize_model(model,
     # Set params for RF    
     if isinstance(model, RandomForestRegressor):
         n_estimators = np.linspace(10,150, n, dtype=np.int).tolist() if opt_type != 'randomcv' else randint(10,151)
-        max_features =  np.linspace(0.05,1, n).tolist() if opt_type != 'randomcv' else uniform(0.05,1)
+        max_features =  np.linspace(0.05,.9, 2).tolist() if opt_type != 'randomcv' else uniform(0.05,.9)
         min_samples_split = np.linspace(2,20, n, dtype=np.int).tolist() if opt_type != 'randomcv' else randint(2,21)
         min_samples_leaf = np.linspace(1,20, n, dtype=np.int).tolist() if opt_type != 'randomcv' else randint(1,21)
         bootstrap = np.array([True, False], dtype=bool).tolist() if opt_type != 'randomcv' else [True,False]
@@ -134,7 +135,7 @@ def optimize_model(model,
         
         grid_search.fit(x_train, y_train)
         best_params = grid_search.best_params_
-        results = calculate_scores(grid_search, best_params)
+        results = calculate_scores(grid_search, best_params, x_test = x_test, y_test = y_test)
         return(results)
 
     # if tuning method == random CV
@@ -152,7 +153,7 @@ def optimize_model(model,
         
         random_search.fit(x_train, y_train)
         best_params = random_search.best_params_
-        results = calculate_scores(random_search, best_params)
+        results = calculate_scores(random_search, best_params, x_test = x_test, y_test = y_test)
         return(results)
     
     # if tuning method == Bayesian optimization
@@ -216,7 +217,7 @@ def optimize_model(model,
             bayopt_search =  xgb.XGBClassifier(objective="binary:logistic", **best_params)
         
         bayopt_search.fit(x_train,y_train)
-        results = calculate_scores(bayopt_search, best_params)
+        results = calculate_scores(bayopt_search, best_params, x_test = x_test, y_test = y_test)
                 
         return(results)
     
@@ -249,7 +250,7 @@ def optimize_model(model,
 
             # process output file to get params
             with open("tpot_rf.py", "r") as fp:
-                for line in lines_that_start_with("exported_pipeline = ", fp):
+                for line in lines_that_contain("Regressor", fp):
                     parse_this = line
 
             p = re.compile(r"[\w]+=[\w|[\d+\.\d]+")
@@ -260,7 +261,7 @@ def optimize_model(model,
                 key, val = match.split("=")
                 best_params[key] = eval(val)
 
-            results = calculate_scores(tpot, best_params)
+            results = calculate_scores(tpot, best_params, x_test = x_test, y_test = y_test)
 
         # specify config for XGB
         else:
@@ -290,9 +291,6 @@ def optimize_model(model,
             
             # process output file to get params
             with open("tpot_xbg.py", "r") as fp:
-                # for line in lines_that_contain("exported_pipeline =", fp):
-                #     parse_this = line
-
                 for line in lines_that_contain("XGB", fp):
                     parse_this = line
 
@@ -307,10 +305,17 @@ def optimize_model(model,
             if 'nthread' in best_params:
                 del best_params['nthread']
 
-            results = calculate_scores(tpot, best_params)
+            results = calculate_scores(tpot, best_params, x_test = x_test, y_test = y_test)
+            print(results)
         return(results)
 
-def wrapper(model, cv = 3, n = 3):
+def wrapper(model, 
+            x_train, 
+            y_train, 
+            x_test, 
+            y_test,
+            cv = 3, 
+            n = 3):
     start_time = timeit.default_timer()
     tuning_methods = ['gridcv','randomcv','bayes','tpot']
     
@@ -321,9 +326,9 @@ def wrapper(model, cv = 3, n = 3):
     
     df  = pd.DataFrame(columns = cols)
     
-    print("Parallel processing being used for all tuning methods except TPOT")
+    print(f"CV = {cv}, n (hyperparameters) = {n}.\nParallel processing being used for all tuning methods except TPOT")
     for method in tqdm_notebook(tuning_methods):
-        results = optimize_model(model, opt_type = method, cv = cv, n = n)
+        results = optimize_model(model, x_train, y_train, x_test, y_test, opt_type = method, cv = cv, n = n)
         df.loc[method] = results
         
     stop_time = timeit.default_timer()
