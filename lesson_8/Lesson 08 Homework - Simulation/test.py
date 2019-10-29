@@ -3,7 +3,7 @@
 from pyomo.environ import *
 import pandas as pd # used for results display
 
-def supply_optimizer(discount_pork):
+def purchase_quantity(discount_pork):
     # Unfold to see the Pyomo solution with arrays of decision variables
     ### Problem Data ###
 
@@ -102,7 +102,7 @@ def supply_optimizer(discount_pork):
 # max_prop_ing = { ingredients[i]:{ types[j]:mxpi[i][j] for j in range(len(types)) } for i in range(len(ingredients)) }
 
 # max_ingredient = dict( zip( ingredients, [30, 20, 17] ) )
-# min_ingredient = dict( zip( ingredients, [20,  0,  0] ) )
+# min_ingredient = dict( zip( ingredients, [23,  0,  0] ) )
 
 # ### Pyomo Model ###
 
