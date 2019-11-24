@@ -1,4 +1,3 @@
-
 def simulate(artifacts_found = True, buy_insurance = False):
     # days in a week
     n = 7
@@ -7,10 +6,13 @@ def simulate(artifacts_found = True, buy_insurance = False):
     profit_ls = []
 
     np.random.seed(6)
-    for _ in range(1000):
-        if isinstance(artifacts_found, (int, float)):
-            prob_found = artifacts_found
-            prob_dist = (1-prob_found, prob_found)
+    
+    if isinstance(artifacts_found, (int, float)):
+        prob_found = artifacts_found
+        prob_dist = (1-prob_found, prob_found)
+
+    for j in range(1000):
+        if prob_dist:
             artifacts_found = np.random.choice([0,1], 1, p=[*prob_dist])
 
         if artifacts_found == 1 or artifacts_found is True:
