@@ -114,3 +114,62 @@ def simulate(artifacts_found = True, buy_insurance = False):
         profit_ls.append(profit)
 
     return profit_ls, min_schedule_ls
+
+
+def return_stats(profit_ls, min_schedule_ls, show_summary = True):
+    profit_ls = np.array(profit_ls)
+    min_schedule_ls = np.array(min_schedule_ls)
+
+    # calculate summary stats
+    mean_profit = int(np.mean(profit_ls))
+    less_than_280 = len(np.where(min_schedule_ls < 280)[0])/len(min_schedule_ls)
+    between_280_and_329 = len(np.intersect1d(np.where(min_schedule_ls >= 280)[0],np.where(min_schedule_ls <= 329)[0]))/len(min_schedule_ls)
+    over_329 = len(np.where(min_schedule_ls > 329)[0])/len(min_schedule_ls)
+
+    # print summary stats else return them
+    if show_summary is True:
+        print(f"""Summary Stats:
+        mean profit: ${mean_profit:,.2f}
+        prob less than 280 days: {round(less_than_280*100,2)}%
+        prob between 280 and 329 days: {round(between_280_and_329*100,2)}%
+        prob over 329 days: {round(over_329*100,2)}%
+        prob sum: {(less_than_280 + between_280_and_329 + over_329)*100}%""")
+
+    else:
+        return mean_profit
+
+def show_payoff_table(artifacts_found = .30):
+    import pandas as pd
+
+    # define states, alternatives, and prior probs
+    alternatives = {'Buy_Insurance': True,'No_Insurance': False}
+    states =  {'Artifacts': True, 'No_Artifacts': False}
+    df  = pd.DataFrame(columns = list(states.keys()), index=list(alternatives.keys()))
+    prior_probs = [artifacts_found, 1-artifacts_found]
+
+    # populate payoff table
+    for alt_name, alt_val in alternatives.items():
+        for state_name, state_value in states.items():
+            profit_ls, min_schedule_ls = simulate(artifacts_found = state_value, buy_insurance = alt_val)
+            mean_profit = return_stats(profit_ls, min_schedule_ls, show_summary = False)
+            df.loc[alt_name][state_name] = round(mean_profit/1000000,1)
+
+    return df, prior_probs
+
+
+def bayes_calc(prior_probs, df):
+    # create arrays of alternatives and prior probs
+    alt_states = np.array([df.loc["Buy_Insurance"].tolist(),df.loc["No_Insurance"].tolist()])
+    prior_probs = np.array(prior_probs)
+    expected_payoffs = {}
+
+    # calculate expected payoffs using Bayes' decision rule
+    for i, alt in enumerate(alt_states):
+        ep = sum(prior_probs * np.array(alt))
+        expected_payoffs[df.index[i]] = ep
+
+    # get maximum payoff and best alternative
+    best_alt = max(expected_payoffs, key=expected_payoffs.get)
+    max_val = expected_payoffs[best_alt]
+    return best_alt, max_val
+
