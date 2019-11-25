@@ -154,6 +154,8 @@ def show_payoff_table(artifacts_found = .30):
             mean_profit = return_stats(profit_ls, min_schedule_ls, show_summary = False)
             df.loc[alt_name][state_name] = round(mean_profit/1000000,1)
 
+    # df.loc[:,['Artifacts','No_Artifacts']].apply(lambda x: x/1000000).style.format('${0:,.2f}')
+
     return df, prior_probs
 
 
