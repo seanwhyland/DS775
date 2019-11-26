@@ -1,4 +1,7 @@
-def simulate(artifacts_found = True, buy_insurance = False):
+def simulate(artifacts_found = True, buy_insurance = False, print_schedule = False):
+    """
+    function to simulate profit according to task duration and costs
+    """
     # days in a week
     n = 7
 
@@ -112,11 +115,20 @@ def simulate(artifacts_found = True, buy_insurance = False):
         # calculate profit
         profit = base + bonus - (penalty + artifact_cost + insurance_cost)
         profit_ls.append(profit)
+        
+    if print_schedule is True:
+        print(f'Optimal Schedule Length (weeks): {solver.ObjectiveValue()}')
+        for i in range(num_tasks):
+            print(
+                f'{task_names[i]} start at {solver.Value(start_vars[i])} and end at {solver.Value(end_vars[i])}'
+            )
 
     return profit_ls, min_schedule_ls
 
-
 def return_stats(profit_ls, min_schedule_ls, show_summary = True):
+    """
+    function to return simulation statistics
+    """    
     profit_ls = np.array(profit_ls)
     min_schedule_ls = np.array(min_schedule_ls)
 
@@ -139,6 +151,9 @@ def return_stats(profit_ls, min_schedule_ls, show_summary = True):
         return mean_profit
 
 def show_payoff_table(artifacts_found = .30):
+    """
+    function to calculate payoff table for use in Bayes Decision Rule
+    """ 
     import pandas as pd
 
     # define states, alternatives, and prior probs
@@ -160,6 +175,9 @@ def show_payoff_table(artifacts_found = .30):
 
 
 def bayes_calc(prior_probs, df):
+    """
+    function to calculate expected payoffs and best alternative
+    """ 
     # create arrays of alternatives and prior probs
     alt_states = np.array([df.loc["Buy_Insurance"].tolist(),df.loc["No_Insurance"].tolist()])
     prior_probs = np.array(prior_probs)
@@ -173,5 +191,6 @@ def bayes_calc(prior_probs, df):
     # get maximum payoff and best alternative
     best_alt = max(expected_payoffs, key=expected_payoffs.get)
     max_val = expected_payoffs[best_alt]
+
     return best_alt, max_val
 

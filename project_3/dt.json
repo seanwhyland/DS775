@@ -1,7 +1,7 @@
 {
   "SilverDecisions": "1.1.0",
   "buildTimestamp": 1544382143568,
-  "savetime": "2019-11-25T23:08:23.782Z",
+  "savetime": "2019-11-26T02:01:38.376Z",
   "lng": "en",
   "viewMode": "criterion1",
   "rule": "expected-value-maximization",
@@ -321,7 +321,7 @@
                 "optimal": false
               }
             },
-            "name": "Experiment",
+            "name": "Hire consulting",
             "payoff": [
               "-50000/1000000",
               0
@@ -2917,7 +2917,7 @@
                 "optimal": true
               }
             },
-            "name": "No experiment",
+            "name": "No consulting firm",
             "payoff": [
               0,
               0
